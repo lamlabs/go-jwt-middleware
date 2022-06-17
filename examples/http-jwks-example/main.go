@@ -7,13 +7,17 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/auth0/go-jwt-middleware/v2"
+	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 )
 
 var handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	claims := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
+
+	if len(claims.RegisteredClaims.Subject) == 0 {
+		http.Error(w, "subject in JWT claims was empty", http.StatusBadRequest)
+	}
 
 	payload, err := json.Marshal(claims)
 	if err != nil {
@@ -25,8 +29,8 @@ var handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Write(payload)
 })
 
-func main() {
-	issuerURL, err := url.Parse("https://<your tenant domain>/")
+func setupHandler(issuer string, audience []string) http.Handler {
+	issuerURL, err := url.Parse(issuer)
 	if err != nil {
 		log.Fatalf("failed to parse the issuer url: %v", err)
 	}
@@ -38,14 +42,16 @@ func main() {
 		provider.KeyFunc,
 		validator.RS256,
 		issuerURL.String(),
-		[]string{"<your api identifier>"},
+		audience,
 	)
 	if err != nil {
 		log.Fatalf("failed to set up the validator: %v", err)
 	}
 
-	// Set up the middleware.
-	middleware := jwtmiddleware.New(jwtValidator.ValidateToken)
+	return jwtmiddleware.New(jwtValidator.ValidateToken).CheckJWT(handler)
+}
 
-	http.ListenAndServe("0.0.0.0:3000", middleware.CheckJWT(handler))
+func main() {
+	mainHandler := setupHandler("https://<your tenant domain>/", []string{"<your api identifier>"})
+	http.ListenAndServe("0.0.0.0:3000", mainHandler)
 }

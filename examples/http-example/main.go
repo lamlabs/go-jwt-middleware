@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/lamlabs/go-jwt-middleware/v2"
+	"github.com/lamlabs/go-jwt-middleware/v2/validator"
 )
 
 // CustomClaimsExample contains custom data we want from the token.
@@ -24,6 +24,10 @@ func (c *CustomClaimsExample) Validate(ctx context.Context) error {
 	if c.ShouldReject {
 		return errors.New("should reject was set to true")
 	}
+	return nil
+}
+
+func (c *CustomClaimsExample) AddScopeToContext(ctx *context.Context) error {
 	return nil
 }
 

@@ -10,6 +10,6 @@ require (
 )
 
 require (
-	github.com/auth0/go-jwt-middleware/v2 v2.0.1
+	//github.com/lamlabs/go-jwt-middleware/v2 latest
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898 // indirect
 )

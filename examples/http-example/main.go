@@ -8,8 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/lamlabs/go-jwt-middleware/v2"
 	"github.com/lamlabs/go-jwt-middleware/v2/validator"
+
+	jwtmiddleware "github.com/lamlabs/go-jwt-middleware/v2"
 )
 
 // CustomClaimsExample contains custom data we want from the token.

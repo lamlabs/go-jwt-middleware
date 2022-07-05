@@ -18,6 +18,10 @@ func (tc *testClaims) Validate(context.Context) error {
 	return tc.ReturnError
 }
 
+func (tx *testClaims) AddScopeToContext(ctx *context.Context) error {
+	return nil
+}
+
 func TestValidator_ValidateToken(t *testing.T) {
 	const (
 		issuer   = "https://go-jwt-middleware.eu.auth0.com/"
